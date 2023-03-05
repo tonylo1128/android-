@@ -1,6 +1,8 @@
 package com.example.theshire.data;
 
-public class ApiDataModel {
+import java.io.Serializable;
+
+public class ApiDataModel implements Serializable {
     private String Title_en;
     private String Title_tc;
     private String Title_sc;

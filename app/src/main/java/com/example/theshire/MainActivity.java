@@ -1,5 +1,6 @@
 package com.example.theshire;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     ListView apiListView;
+    CardAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,15 +65,12 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-
-
         apiListView = findViewById(R.id.apiListView);
 
-        getRouteData();
+        getRouteData(this);
     }
 
-
-    private void getRouteData() {
+    private void getRouteData(Context context) {
 
         Call<List<ApiDataModel>> call = RetrofitClient.getInstance().getMyApi().getRouteData();
         call.enqueue(new Callback<List<ApiDataModel>>() {
@@ -80,24 +79,13 @@ public class MainActivity extends AppCompatActivity {
 
                 List<ApiDataModel> routeDataList = response.body();
 
-                if (routeDataList != null) {
-                    String[] routes = new String[routeDataList.size()];
+                adapter = new CardAdapter(context, R.layout.card, routeDataList);
 
-                    for (int i = 0; i < routeDataList.size(); i++) {
-                        routes[i] = routeDataList.get(i).getTitle_en();
-                    }
-                    apiListView.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, routes));
-
-
-                    Log.i("APICALL", String.valueOf(routes));
+                if (apiListView != null) {
+                    apiListView.setAdapter(adapter);
+                } else {
+                    Log.e("API_ERROR", "ListView is null");
                 }
-                else{
-                    Log.i("APICALL", String.valueOf(routeDataList));
-                    Log.i("APICALL", String.valueOf(response));
-
-
-                }
-
             }
 
             @Override
@@ -119,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
